@@ -69,8 +69,13 @@ public extension JsonApiClient {
             throw ABNetworkingError.couldNotParseResult(error)
         } catch let error as CancellationError {
             throw error
-        } catch {
-            throw ABNetworkingError.urlSessionError(error)
+        } catch let error {
+            let nsError = error as NSError
+            if nsError.domain == NSURLErrorDomain, nsError.code == NSURLErrorCancelled {
+                throw CancellationError()
+            } else {
+                throw ABNetworkingError.urlSessionError(error)
+            }
         }
     }
 }
