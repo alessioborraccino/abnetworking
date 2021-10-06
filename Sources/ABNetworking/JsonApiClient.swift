@@ -51,8 +51,10 @@ public extension JsonApiClient {
     func start<Model: Decodable>(_ request: APIRequest, resource: Model.Type = Model.self, using jsonDecoder: JSONDecoder) async throws -> Model {
 
         do {
+            try Task.checkCancellation()
             let (data, response) = try await session.data(for: request.jsonUrlRequest)
 
+            try Task.checkCancellation()
             guard let response = response as? HTTPURLResponse else {
                 throw ABNetworkingError.receivedNonHttpResponse
             }
@@ -62,6 +64,7 @@ public extension JsonApiClient {
             }
 
             return try jsonDecoder.decode(Model.self, from: data)
+
         } catch let error as DecodingError {
             throw ABNetworkingError.couldNotParseResult(error)
         } catch {
