@@ -67,6 +67,8 @@ public extension JsonApiClient {
 
         } catch let error as DecodingError {
             throw ABNetworkingError.couldNotParseResult(error)
+        } catch let error as CancellationError {
+            throw error
         } catch {
             throw ABNetworkingError.urlSessionError(error)
         }
