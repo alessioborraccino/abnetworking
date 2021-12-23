@@ -5,6 +5,9 @@ public protocol URLSessionProtocol {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
 
+
+@available(macOS 12.0, *)
+@available(macCatalyst 15.0, *)
 extension URLSession: URLSessionProtocol {
     public func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         try await data(for: request, delegate: nil)

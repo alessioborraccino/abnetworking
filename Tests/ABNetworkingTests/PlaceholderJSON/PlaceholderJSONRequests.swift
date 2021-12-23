@@ -7,9 +7,10 @@ struct UserEndpoint: APIEndpoint {
 
     let userIdentifier: Int?
     var baseUrl: String = "jsonplaceholder.typicode.com"
-
+    var isPathWrong: Bool = false
+    
     var path: String {
-        var path = UserEndpoint.path
+        var path = UserEndpoint.path + (isPathWrong ? "###" : "")
         if let userIdentifier = userIdentifier {
             path.append("/\(userIdentifier)")
         }
@@ -19,10 +20,22 @@ struct UserEndpoint: APIEndpoint {
     init(userIdentifier: Int? = nil) {
         self.userIdentifier = userIdentifier
     }
+    
+    static var failingHost: UserEndpoint {
+        var userEndpoint = UserEndpoint()
+        userEndpoint.baseUrl = "wrooong"
+        return userEndpoint
+    }
+    
+    static var failingPath: UserEndpoint {
+        var userEndpoint = UserEndpoint()
+        userEndpoint.isPathWrong = true
+        return userEndpoint
+    }
 }
 
 
-// MARK: - Correct Requests
+// MARK: - Successful Requests
 struct GetUsersRequest: APIRequest {
     let endpoint: APIEndpoint = UserEndpoint()
     let method = HTTPMethod.get
@@ -68,6 +81,21 @@ struct UpdateUserRequest: APIRequest {
     }
 }
 
+// MARK: - Erroring Requests
+struct ErroringHostRequest: APIRequest {
+    let endpoint: APIEndpoint = UserEndpoint.failingHost
+    let method = HTTPMethod.get
+}
+
+struct ErroringPathRequest: APIRequest {
+    let endpoint: APIEndpoint = UserEndpoint.failingPath
+    let method = HTTPMethod.get
+}
+
+struct ErroringMethodRequest: APIRequest {
+    let endpoint: APIEndpoint = UserEndpoint()
+    let method = HTTPMethod.patch
+}
 
 // MARK: - Helpers
 struct CodableVoid: Codable {
