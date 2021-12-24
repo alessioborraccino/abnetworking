@@ -1,15 +1,14 @@
 import XCTest
 @testable import ABNetworking
 
-final class PlaceholderJSONTests: XCTestCase {
+final class End2EndAsyncTests: XCTestCase {
     private let client = JsonApiClient()
 }
 
 // MARK: - Succesful Async tests
-extension PlaceholderJSONTests {
+extension End2EndAsyncTests {
     
     func testGetUsers() async throws {
-        
         let request = GetUsersRequest()
         let users: [User] = try await client.start(request)
         XCTAssertEqual(users.count, 10)
@@ -24,7 +23,7 @@ extension PlaceholderJSONTests {
 }
 
 // MARK: - Failing Async tests
-extension PlaceholderJSONTests {
+extension End2EndAsyncTests {
     
     func testFailingRequestForWrongHostname() async throws {
         let request = ErroringHostRequest()
@@ -75,6 +74,22 @@ extension PlaceholderJSONTests {
                 XCTFail()
                 return
             }
+        }
+    }
+    
+    func testFailingRequestForCancellation() async throws {
+        let request =  GetUsersRequest()
+        do {
+        
+            let task = Task<[User], Error>(priority: .high, operation: {
+                try await client.start(request)
+            })
+            
+            task.cancel()
+            let _ = try await task.value
+   
+        } catch {
+            XCTAssert(error is CancellationError)
         }
     }
 }

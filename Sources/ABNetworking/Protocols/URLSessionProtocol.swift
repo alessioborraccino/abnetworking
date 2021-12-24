@@ -6,6 +6,7 @@ public protocol URLSessionProtocol {
 }
 
 
+@available(iOS 15.0, *)
 @available(macOS 12.0, *)
 @available(macCatalyst 15.0, *)
 extension URLSession: URLSessionProtocol {

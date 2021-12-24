@@ -6,6 +6,8 @@ protocol APIClient {
 }
 
 extension APIClient {
+    
+    @discardableResult
     func start<Model: Decodable>(_ request: APIRequest, resource: Model.Type = Model.self, completion: @escaping (Result<Model, ABNetworkingError>) -> Void) -> APICancellable {
         return start(request, resource: resource, using: JSONDecoder(), completion: completion)
     }
